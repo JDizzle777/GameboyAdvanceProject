@@ -10,6 +10,7 @@
 #include "game_state.h"
 #include "game_utils.h"
 #include "object_utils.h"
+#include "smgbalib.h"
 
 // Constructor
 // This is called once at the beginning of the game to
@@ -58,6 +59,9 @@ void GameState::SetupStage_Level1() {
 	LoadBgTileset(0);
 	LoadBgMap(0);
 	
+   // play sound
+   PlayNote(NOTE_D4, 255);
+
 	// Initialize the objects for the first level and update counters
 	InitObject(kObj_Player, ksprites_SpaceManMike);
    InitObject(kObj_playerLaser, ksprites_Laser_Blue);
@@ -119,7 +123,8 @@ void GameState::SetupStage_Level1() {
 
 	// set current direction of player and HP
    currDirection = prevDirection = 1;
-   playerHP = 5;
+   playerHP = 10;
+   points = 0;
 
    // set the current frame
    frame = 0;
@@ -186,7 +191,7 @@ void GameState::Update_Level1() {
 	if (CheckKeyPress(KEY_A) && !_isShooting) {
       // SHOOT!
       playerLaserX = _xPlayer;
-      playerLaserY = _yPlayer+19;
+      playerLaserY = _yPlayer+17;
       _isShooting = true;
       playerLaserDir = currDirection;
       MoveObjectTo(kObj_playerLaser, playerLaserX, playerLaserY);
@@ -286,7 +291,7 @@ void GameState::Update_Level1() {
             ay = -alienYVelocity[i];
          }   
          else{
-            ay += 6;
+            ay += 10;
          }
 
          // Calculate the alien's new location.
@@ -331,7 +336,7 @@ void GameState::Update_Level1() {
             my = -monsterYVelocity[i];
          }   
          else{
-            my += 6;
+            my += 10;
          }
 
          // Calculate the monsters's new location.
@@ -514,6 +519,7 @@ void GameState::Update_Level1() {
                _has_projectile[getAlientoLaser(kObj_Laser[i])] = false;
                numAlien--;
                playerHP--;
+               points++;
             }
             else{
                alienHP[i]--;
@@ -549,6 +555,7 @@ void GameState::Update_Level1() {
             ShowObject(kObj_Laser[i], false);
             _has_projectile[getAlientoLaser(kObj_Laser[i])] = false;
             playerHP--;
+            points--;
          }     
       }
       
@@ -562,12 +569,14 @@ void GameState::Update_Level1() {
                ShowObject(kObj_playerLaser, false);
                _isShooting = false;
                numAlien--;
+               points += 5;
             }
             else{
                MoveObjectTo(kObj_playerLaser, -20, -35);
                ShowObject(kObj_playerLaser, false);
                _isShooting = false;
                alienHP[i]--;
+               points++;
             }
          }
       }
@@ -603,6 +612,7 @@ void GameState::Update_Level1() {
                ShowObject(kObj_Monster[i], false);
                numMonster--;
                playerHP-=2;
+               points++;
             }
             else{
                monsterHP[i]--;
@@ -621,19 +631,21 @@ void GameState::Update_Level1() {
                ShowObject(kObj_playerLaser, false);
                _isShooting = false;
                numMonster--;
+               points += 5;
             }
             else{
                MoveObjectTo(kObj_playerLaser, -20, -35);
                ShowObject(kObj_playerLaser, false);
                _isShooting = false;
                monsterHP[i]--;
+               points++;
             }
          }
       }      
    }   
 
    // check for number of enemies on the screen
-   if(numAlien == 0){
+   if((timer > 500 && timer < 4000) && numAlien == 0){
       numAlien++;
       for(int i = 0; i < numAlien; i++){
          _xAlien[i] = rand() % 210;
@@ -643,7 +655,7 @@ void GameState::Update_Level1() {
          curAlienDir[i] = prevAlienDir[i] = 1;
       }
    }
-   if(numMonster == 0){
+   if((timer > 500 && timer < 4000) && numMonster == 0){
       numMonster++;
       for(int i = 0; i < numMonster; i++){
          _xMonster[i] = rand() % 210;

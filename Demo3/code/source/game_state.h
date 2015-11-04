@@ -75,6 +75,9 @@ private:
    int playerHP;
    int alienHP[MAX_ENEMIES], monsterHP[MAX_ENEMIES];
 
+   // player's points!
+   int points;
+
    // Height of the player sprite.
    int _yPlayerHeight;
 

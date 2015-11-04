@@ -30,7 +30,7 @@ typedef struct {
 	int mask_index;
 	int shape;
 	int size;
-   int numParent; // to keep track of parent alien of the laser beam
+   int numParent; // if the sprite is a laser, keeps track of which alien shot it
 } SpriteInfoStruct;
 
 // These sprite/palette data arrays are defined in sprites.cpp
@@ -75,6 +75,7 @@ const int ksprites_SpaceManMike = 2;
 const int ksprites_SpaceManMike_Dead = 3;
 const int ksprites_Alien = 4;
 const int ksprites_Monster = 5;
+
 
 void setAlientoLaser(int numLaser, int numAlien);
 int getAlientoLaser(int numLaser);
